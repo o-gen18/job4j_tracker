@@ -1,31 +1,22 @@
 package ru.job4j.tracker;
 
-import java.io.InputStream;
+import ru.job4j.tracker.action.*;
+import ru.job4j.tracker.input.ConsoleInput;
+import ru.job4j.tracker.input.Input;
+import ru.job4j.tracker.input.ValidateInput;
+import ru.job4j.tracker.sqlconnection.PSQLConnection;
+import ru.job4j.tracker.store.MemTracker;
+import ru.job4j.tracker.store.SqlTracker;
+import ru.job4j.tracker.store.Store;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.function.Consumer;
 
 public class StartUI {
 
-    private Connection initConnection() {
-        try (InputStream in = StartUI.class.getClassLoader()
-             .getResourceAsStream("app.properties")) {
-            Properties config = new Properties();
-            config.load(in);
-            Class.forName(config.getProperty("driver-class-name"));
-            return DriverManager.getConnection(
-                    config.getProperty("url"),
-                    config.getProperty("username"),
-                    config.getProperty("password"));
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private void init(Input input, Store sqlTracker, ArrayList<UserAction> actions,
-                     Consumer<String> output) {
+    public void init(Input input, Store sqlTracker, ArrayList<UserAction> actions,
+                      Consumer<String> output) {
         boolean run = true;
         while (run) {
             this.showMenu(actions);
@@ -42,6 +33,19 @@ public class StartUI {
         }
     }
 
+    private Class<? extends Store> chooseStorage(Input input) {
+        String choice = "Please, choose storage mode: "
+        + System.lineSeparator()
+        + "0 - RAM" + System.lineSeparator()
+        + "1 - Database" + System.lineSeparator();
+        int select = input.askInt(choice, 2);
+        if (select == 0) {
+            return MemTracker.class;
+        } else {
+            return SqlTracker.class;
+        }
+    }
+
     public static void main(String[] args) {
         Input input = new ConsoleInput();
         Input validate = new ValidateInput(input);
@@ -54,11 +58,20 @@ public class StartUI {
         actions.add(new FindByNameAction());
         actions.add(new ExitAction());
         StartUI start = new StartUI();
-        try (Store sqlTracker = new SqlTracker(start.initConnection())) {
-            sqlTracker.init();
-            start.init(validate, sqlTracker, actions, System.out::println);
-        } catch (Exception e) {
-            e.printStackTrace();
+        Class<? extends Store> storeClass = start.chooseStorage(validate);
+        Store store;
+        if (storeClass == MemTracker.class) {
+            store = new MemTracker();
+            System.out.println(String.format("You've chosen %s for storage!", store.getName()));
+            start.init(validate, store, actions, System.out::println);
+        } else {
+            try (Connection connection = PSQLConnection.instOf().getConnection()) {
+                store = new SqlTracker(connection);
+                System.out.println(String.format("You've chosen %s for storage!", store.getName()));
+                start.init(validate, store, actions, System.out::println);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

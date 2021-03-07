@@ -1,36 +1,23 @@
 package ru.job4j.tracker;
 
 import org.junit.Test;
+import ru.job4j.tracker.model.Item;
+import ru.job4j.tracker.sqlconnection.ConnectionRollback;
+import ru.job4j.tracker.sqlconnection.PSQLConnection;
+import ru.job4j.tracker.store.SqlTracker;
 
-import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class SqlTrackerTest {
 
-    public Connection init() {
-        try (InputStream in = SqlTracker.class.getClassLoader()
-             .getResourceAsStream("app.properties")) {
-            Properties config = new Properties();
-            config.load(in);
-            Class.forName(config.getProperty("driver-class-name"));
-            return DriverManager.getConnection(
-                    config.getProperty("url"),
-                    config.getProperty("username"),
-                    config.getProperty("password"));
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
     @Test
     public void whenCreateItemThenSize1() throws Exception {
-        try (SqlTracker tracker = new SqlTracker(ConnectionRollback.create(this.init()))) {
+        try (Connection connection = (ConnectionRollback.create(
+                PSQLConnection.instOf().getConnection()))) {
+            SqlTracker tracker = new SqlTracker(connection);
             tracker.add(new Item("Oleg"));
             assertThat(tracker.findByName("Oleg").size(), is(1));
         }
@@ -38,7 +25,9 @@ public class SqlTrackerTest {
 
     @Test
     public void whenDeleteItemThenSize0() throws Exception {
-        try (SqlTracker tracker = new SqlTracker(ConnectionRollback.create(this.init()))) {
+        try (Connection connection = (ConnectionRollback.create(
+                PSQLConnection.instOf().getConnection()))) {
+            SqlTracker tracker = new SqlTracker(connection);
             Item first = tracker.add(new Item("Oleg"));
             String id = first.getId();
             tracker.delete(id);
@@ -48,7 +37,9 @@ public class SqlTrackerTest {
 
     @Test
     public void whenReplaceItemThenSameIdButDiffName() throws Exception {
-        try (SqlTracker tracker = new SqlTracker(ConnectionRollback.create(this.init()))) {
+        try (Connection connection = (ConnectionRollback.create(
+                PSQLConnection.instOf().getConnection()))) {
+            SqlTracker tracker = new SqlTracker(connection);
             Item first = tracker.add(new Item("Oleg"));
             String id = first.getId();
             tracker.replace(id, new Item("James"));
@@ -63,7 +54,9 @@ public class SqlTrackerTest {
 
     @Test
     public void whenFindAllThenSizeEqualsNumberOfAdded() throws Exception {
-        try (SqlTracker tracker = new SqlTracker(ConnectionRollback.create(this.init()))) {
+        try (Connection connection = (ConnectionRollback.create(
+                PSQLConnection.instOf().getConnection()))) {
+            SqlTracker tracker = new SqlTracker(connection);
             tracker.add(new Item("Oleg"));
             tracker.add(new Item("Petr"));
             tracker.add(new Item("Ivan"));
@@ -73,7 +66,9 @@ public class SqlTrackerTest {
 
     @Test
     public void whenFindByIdThenWorksGood() throws Exception {
-        try (SqlTracker tracker = new SqlTracker(ConnectionRollback.create(this.init()))) {
+        try (Connection connection = (ConnectionRollback.create(
+                PSQLConnection.instOf().getConnection()))) {
+            SqlTracker tracker = new SqlTracker(connection);
             Item first = tracker.add(new Item("Oleg"));
             String id = first.getId();
             assertThat(tracker.findById(id).getName(), is("Oleg"));
@@ -82,7 +77,9 @@ public class SqlTrackerTest {
 
     @Test
     public void whenFindByNameThenWorksGood() throws Exception {
-        try (SqlTracker tracker = new SqlTracker(ConnectionRollback.create(this.init()))) {
+        try (Connection connection = (ConnectionRollback.create(
+                PSQLConnection.instOf().getConnection()))) {
+            SqlTracker tracker = new SqlTracker(connection);
             tracker.add(new Item("Oleg"));
             tracker.add(new Item("Ivan"));
             tracker.add(new Item("Oleg"));
