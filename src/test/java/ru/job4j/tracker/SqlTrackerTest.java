@@ -29,7 +29,7 @@ public class SqlTrackerTest {
                 PSQLConnection.instOf().getConnection()))) {
             SqlTracker tracker = new SqlTracker(connection);
             Item first = tracker.add(new Item("Oleg"));
-            String id = first.getId();
+            Integer id = first.getId();
             tracker.delete(id);
             assertThat(tracker.findByName("Oleg").size(), is(0));
         }
@@ -41,7 +41,7 @@ public class SqlTrackerTest {
                 PSQLConnection.instOf().getConnection()))) {
             SqlTracker tracker = new SqlTracker(connection);
             Item first = tracker.add(new Item("Oleg"));
-            String id = first.getId();
+            Integer id = first.getId();
             tracker.replace(id, new Item("James"));
             assertThat(tracker.findById(id).getName(), is("James"));
         }
@@ -70,7 +70,7 @@ public class SqlTrackerTest {
                 PSQLConnection.instOf().getConnection()))) {
             SqlTracker tracker = new SqlTracker(connection);
             Item first = tracker.add(new Item("Oleg"));
-            String id = first.getId();
+            Integer id = first.getId();
             assertThat(tracker.findById(id).getName(), is("Oleg"));
         }
     }

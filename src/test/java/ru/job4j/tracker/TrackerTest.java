@@ -14,7 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -67,7 +67,7 @@ public class TrackerTest {
         tracker.add(item);
         //трекер сам генерирует id типа long.
         // Поэтому вручную ставлю id=1 после добавления.
-        item.setId("1");
+        item.setId(1);
         Input input = mock(Input.class);
 
         when(input.askInt(any(String.class))).thenReturn(3); //пункт меню удалить.
@@ -87,7 +87,7 @@ public class TrackerTest {
         MemTracker tracker = new MemTracker();
         Item item = new Item("First");
         tracker.add(item);
-        item.setId("1");
+        item.setId(1);
         Input input = mock(Input.class);
 
         when(input.askInt(any(String.class))).thenReturn(4); //пункт меню findById.
@@ -107,7 +107,7 @@ public class TrackerTest {
         MemTracker tracker = new MemTracker();
         Item item = new Item("First");
         tracker.add(item);
-        item.setId("1");
+        item.setId(1);
         Input input = mock(Input.class);
 
         when(input.askInt(any(String.class))).thenReturn(5); //пункт меню findByName.

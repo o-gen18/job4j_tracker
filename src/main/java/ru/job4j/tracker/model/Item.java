@@ -1,9 +1,13 @@
 package ru.job4j.tracker.model;
 
-import java.util.Objects;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "items")
 public class Item {
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String name;
 
     public Item() {
@@ -13,11 +17,11 @@ public class Item {
         this.name = name;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

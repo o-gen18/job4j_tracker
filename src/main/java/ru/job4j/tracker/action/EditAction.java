@@ -15,7 +15,7 @@ public class EditAction implements UserAction {
     @Override
     public boolean execute(Input input, Store sqlTracker, Consumer<String> output) {
         output.accept("Enter id: ");
-        String id = input.askStr("");
+        Integer id = input.askInt("");
         output.accept("Enter new name: ");
         Item item = new Item(input.askStr(""));
         if (sqlTracker.replace(id, item)) {

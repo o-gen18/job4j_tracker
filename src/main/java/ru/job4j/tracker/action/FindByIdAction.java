@@ -14,7 +14,7 @@ public class FindByIdAction implements UserAction {
     @Override
     public boolean execute(Input input, Store sqlTracker, Consumer<String> output) {
         output.accept("Enter id: ");
-        String id = input.askStr("");
+        Integer id = input.askInt("");
         output.accept("Here is your item: " + sqlTracker.findById(id).getName());
     return true;
     }

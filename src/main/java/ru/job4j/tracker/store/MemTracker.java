@@ -27,9 +27,9 @@ public class MemTracker implements Store {
      * Создаём объект класса Random. Его метод nextLong() вернёт произвольное число.
      */
 
-    private String generateId() {
+    private Integer generateId() {
         Random rm = new Random();
-        return String.valueOf(rm.nextLong() + System.currentTimeMillis());
+        return rm.nextInt();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class MemTracker implements Store {
         return item;
     }
 
-    public boolean replace(String id, Item item) {
+    public boolean replace(Integer id, Item item) {
         boolean result = false;
         for (int index = 0; index < items.size(); index++) {
             if ((items.get(index).getId()).equals(id)) {
@@ -56,7 +56,7 @@ public class MemTracker implements Store {
         return result;
     }
 
-    public boolean delete(String id) {
+    public boolean delete(Integer id) {
         boolean result = false;
         for (Item element : items) {
             if ((element.getId()).equals(id)) {
@@ -82,7 +82,7 @@ public class MemTracker implements Store {
         return sameNamedItems;
     }
 
-    public Item findById(String id) {
+    public Item findById(Integer id) {
         Item result = new Item();
         result = null;
         for (Item element : items) {
