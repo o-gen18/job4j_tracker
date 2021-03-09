@@ -2,7 +2,6 @@ package ru.job4j.tracker.model;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Objects;
 
 @Entity
