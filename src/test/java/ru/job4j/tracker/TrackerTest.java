@@ -70,15 +70,14 @@ public class TrackerTest {
         item.setId(1);
         Input input = mock(Input.class);
 
-        when(input.askInt(any(String.class))).thenReturn(3); //пункт меню удалить.
-        when(input.askStr(any(String.class))).thenReturn("1");
+        when(input.askInt(any(String.class))).thenReturn(1);
 
         new DeleteAction().execute(input, tracker, System.out::println);
 
         String ln = System.lineSeparator();
 
         assertThat(new String(out.toByteArray()), is(
-                "Enter id: " + ln + "The item has been successfully deleted" + ln + ln));
+                "Enter id: " + ln + "The item has been successfully deleted" + ln));
         assertThat(tracker.findAll().size(), is(0));
     }
 
@@ -90,16 +89,16 @@ public class TrackerTest {
         item.setId(1);
         Input input = mock(Input.class);
 
-        when(input.askInt(any(String.class))).thenReturn(4); //пункт меню findById.
-        when(input.askStr(any(String.class))).thenReturn("1");
+        when(input.askInt(any(String.class))).thenReturn(1);
 
         new FindByIdAction().execute(input, tracker, System.out::println);
 
         String ln = System.lineSeparator();
 
         assertThat(new String(out.toByteArray()), is(
-                "Enter id: " + ln + "Here is your item: First" + ln + ln));
+                "Enter id: " + ln + "Here is your item: First" + ln));
         assertThat(tracker.findAll().size(), is(1));
+        assertThat(tracker.findAll().get(0).getName(), is("First"));
     }
 
     @Test
@@ -110,7 +109,6 @@ public class TrackerTest {
         item.setId(1);
         Input input = mock(Input.class);
 
-        when(input.askInt(any(String.class))).thenReturn(5); //пункт меню findByName.
         when(input.askStr(any(String.class))).thenReturn("First");
 
         new FindByNameAction().execute(input, tracker, System.out::println);
@@ -120,7 +118,7 @@ public class TrackerTest {
         assertThat(new String(out.toByteArray()), is(
                 "Enter Name: " + ln
                         + "Here are matches found: " + ln
-                        + "Item: First" + "   -   id: 1" + ln + ln));
+                        + "Item: First" + "   -   id: 1" + ln));
         assertThat(tracker.findAll().size(), is(1));
     }
 }
